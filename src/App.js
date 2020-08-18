@@ -7,7 +7,13 @@ import {v4 as uuid} from "uuid";
 
 class App extends React.Component {
   state = {
-    todos: []
+    todos: localStorage.getItem("todos") ? JSON.parse(localStorage.getItem("todos")) : []
+  }
+
+  updateLocalStorage = () => {
+    var todos = this.state.todos;
+    console.log(todos)
+    localStorage.setItem("todos", JSON.stringify(todos));
   }
 
   addItem = (title) => {
@@ -16,7 +22,9 @@ class App extends React.Component {
       title: title,
       done: false
     }
-    this.setState({ todos: [...this.state.todos, newToDo] });
+    this.setState({ todos: [...this.state.todos, newToDo] }, () => {
+      this.updateLocalStorage();
+    });
   }
 
   toggleDone = (id) => {
@@ -25,14 +33,19 @@ class App extends React.Component {
         todo.done = !todo.done;
       }
       return todo;
-    }) });
+    }) }, () => {
+      this.updateLocalStorage();
+    });
   }
 
   deleteItem = (id) => {
-    this.setState({ todos: [...this.state.todos.filter(todo => todo.id !== id)] });
+    this.setState({ todos: [...this.state.todos.filter(todo => todo.id !== id)] }, () => {
+      this.updateLocalStorage();
+    });
   }
 
   render() {
+    console.log(JSON.parse(localStorage.getItem("todos")))
     return (
       <div className="App">
       <Header />
